@@ -181,7 +181,7 @@ open class TMTabItemBarButton: TMBarButton {
     open override func populate(for item: TMBarItemable) {
         super.populate(for: item)
         
-        label.text = item.title
+        label.text = item.attributedTitle ?? item.title
         imageView.image = item.image
         selectedImageView.image = item.selectedImage ?? item.image
     }
