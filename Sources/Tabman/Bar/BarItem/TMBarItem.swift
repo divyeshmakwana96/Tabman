@@ -21,6 +21,10 @@ public protocol TMBarItemable: AnyObject {
     
     /// Title of the item.
     var title: String? { get set }
+    
+    /// Attributed title of the item.
+    var attributedTitle: NSAttributedString? { get set }
+    
     /// Image to display.
     ///
     /// - Note: If you want the image to be colored by tint colors when within a `TMBar`, you must use the `.alwaysTemplate` image rendering mode.
@@ -88,6 +92,12 @@ open class TMBarItem: TMBarItemable {
         }
     }
     
+    open var attributedTitle: NSAttributedString? {
+        didSet  {
+            setNeedsUpdate()
+        }
+    }
+    
     open var image: UIImage?  {
         didSet {
             setNeedsUpdate()
@@ -127,7 +137,7 @@ open class TMBarItem: TMBarItemable {
     /// - Parameters:
     ///   - title: Title of the item.
     ///   - badgeValue: Badge value to display.
-    public convenience init(title: String, badgeValue: String? = nil) {
+    public convenience init(title: AnyString, badgeValue: String? = nil) {
         self.init(with: title, image: nil, selectedImage: nil, badgeValue: badgeValue)
     }
     
@@ -148,14 +158,20 @@ open class TMBarItem: TMBarItemable {
     ///   - image: Image of the item.
     ///   - selectedImage: Image of the item when selected.
     ///   - badgeValue: Badge value to display.
-    public convenience init(title: String, image: UIImage, selectedImage: UIImage? = nil, badgeValue: String? = nil) {
+    public convenience init(title: AnyString, image: UIImage, selectedImage: UIImage? = nil, badgeValue: String? = nil) {
         self.init(with: title, image: image, selectedImage: selectedImage, badgeValue: badgeValue)
     }
     
-    private init(with title: String?, image: UIImage?, selectedImage: UIImage?, badgeValue: String?) {
-        self.title = title
+    private init(with title: AnyString?, image: UIImage?, selectedImage: UIImage?, badgeValue: String?) {
+        self.title = title as? String
+        self.attributedTitle = title as? NSAttributedString
         self.image = image
         self.selectedImage = selectedImage
         self.badgeValue = badgeValue
     }
 }
+
+/// A common protocol to represent both `String` and `NSAttributedString` as a common value for `TMBarItemable`.
+public protocol AnyString {}
+extension String: AnyString {}
+extension NSAttributedString: AnyString {}

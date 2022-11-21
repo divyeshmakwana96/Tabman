@@ -61,7 +61,7 @@ open class TMLabelBarButton: TMBarButton {
     }
     
     /// Text to display in the button.
-    open var text: String? {
+    open var text: AnyString? {
         get {
             return label.text
         }
@@ -211,8 +211,8 @@ open class TMLabelBarButton: TMBarButton {
     open override func populate(for item: TMBarItemable) {
         super.populate(for: item)
         
-        label.text = item.title
-        calculateFontIntrinsicContentSize(for: item.title)
+        label.text = item.attributedTitle ?? item.title
+        calculateFontIntrinsicContentSize(for: item.attributedTitle ?? item.title)
     
         updateBadgeConstraints()
     }
@@ -274,16 +274,30 @@ private extension TMLabelBarButton {
     /// string value and font that requires the biggest size from `.font` and `.selectedFont`.
     ///
     /// - Parameter string: Value used for calculation.
-    private func calculateFontIntrinsicContentSize(for string: String?) {
+    private func calculateFontIntrinsicContentSize(for string: AnyString?) {
         guard let value = string else {
             return
         }
-        let string = value as NSString
+        
         let font = self.font
         let selectedFont = self.selectedFont ?? self.font
         
-        let fontRect = string.boundingRect(with: .zero, options: .usesFontLeading, attributes: [.font: font], context: nil)
-        let selectedFontRect = string.boundingRect(with: .zero, options: .usesFontLeading, attributes: [.font: selectedFont], context: nil)
+        let fontRect: CGRect
+        let selectedFontRect: CGRect
+        
+        if let attributedString = value as? NSAttributedString {
+            let selectedAttributedString = NSMutableAttributedString(attributedString: attributedString)
+            selectedAttributedString.addAttribute(.font, value: selectedFont, range: .init(location: 0, length: attributedString.length))
+            
+            fontRect = attributedString.boundingRect(with: .zero, context: nil)
+            selectedFontRect = selectedAttributedString.boundingRect(with: .zero, context: nil)
+            
+        } else if let string = value as? String {
+            fontRect = string.boundingRect(with: .zero, options: .usesFontLeading, attributes: [.font: font], context: nil)
+            selectedFontRect = string.boundingRect(with: .zero, options: .usesFontLeading, attributes: [.font: selectedFont], context: nil)
+        } else {
+            return // the code will never execute because we have already checked both type casting values
+        }
         
         var largestWidth = max(selectedFontRect.size.width, fontRect.size.width)
         var largestHeight = max(selectedFontRect.size.height, fontRect.size.height)

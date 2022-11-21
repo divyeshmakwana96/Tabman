@@ -19,7 +19,7 @@ internal class AnimateableLabel: UIView {
     
     private let textLayer = CATextLayer()
     
-    var text: String? {
+    var text: AnyString? {
         didSet {
             textLayer.string = text
             invalidateIntrinsicContentSize()

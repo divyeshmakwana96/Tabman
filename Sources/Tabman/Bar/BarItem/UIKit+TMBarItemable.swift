@@ -13,6 +13,13 @@ extension UINavigationItem: TMBarItemable {
 
     // swiftlint:disable unused_setter_value
 
+    public var attributedTitle: NSAttributedString? {
+        get {
+            return nil
+        }
+        set {}
+    }
+    
     public var image: UIImage? {
         get {
             return nil
@@ -37,4 +44,13 @@ extension UINavigationItem: TMBarItemable {
 
 /// :nodoc:
 extension UITabBarItem: TMBarItemable {
+    
+    // swiftlint:disable unused_setter_value
+
+    public var attributedTitle: NSAttributedString? {
+        get {
+            return nil
+        }
+        set {}
+    }
 }
